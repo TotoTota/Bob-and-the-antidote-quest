@@ -9,7 +9,7 @@ public class WallBehaviour : MonoBehaviour
     public Animator camAnim;
     public static bool hasPlayed;
     public static bool playForStop = true;
-    public PlayerMovemnt playerMovemnt;
+    public GameObject player;
 
     private void Start()
     {
@@ -22,7 +22,7 @@ public class WallBehaviour : MonoBehaviour
         {
             playForStop = false;
             wall.SetBool("close?", true);
-            StartCoroutine(playCutscene());
+            StartCoroutine(PlayCutscene());
             hasPlayed = true;
         }
     }
@@ -37,10 +37,11 @@ public class WallBehaviour : MonoBehaviour
         Array.Resize(ref arr, arr.Length - 1);
     }
 
-    IEnumerator playCutscene()
+    IEnumerator PlayCutscene()
     {
-        camAnim.SetTrigger("cutscene 1");
+        CameraController.player = gameObject;
         yield return new WaitForSeconds(1f);
+        CameraController.player = player;
         playForStop = true;
     }
 }

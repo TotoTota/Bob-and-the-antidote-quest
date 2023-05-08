@@ -35,22 +35,24 @@ public class PlayerMovemnt : MonoBehaviour
     {
         if(WallBehaviour.playForStop == false)
         {
-            rb.isKinematic = true;
+            rb.gravityScale = 0;
             return;
         }
         else
         {
-            rb.isKinematic = false;
+            rb.gravityScale = 4;
         }
 
         if (DialogueManager.GetInstance().dialogueIsPlaying)
         {
-            rb.isKinematic = true;
-            return;
+            animator.SetFloat("Walk", 0);
+            animator.SetBool("isJumping", false);
+            speed = 0;
         }
         else
         {
-            rb.isKinematic = false;
+            animator.SetFloat("Walk", 0);
+            speed = 5;
         }
 
         if (KBCounter <= 0)

@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     private static CameraController _instance;
     public static CameraController instance;
 
-    public GameObject player;
+    public static GameObject player;
 
     Vector2 curMinBounds;
     Vector2 curMaxBounds;
@@ -31,6 +31,7 @@ public class CameraController : MonoBehaviour
     private void Start()
     {
         targetPos = transform.position;
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     private void Update()
