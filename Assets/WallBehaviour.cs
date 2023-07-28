@@ -39,9 +39,9 @@ public class WallBehaviour : MonoBehaviour
 
     IEnumerator PlayCutscene()
     {
-        CameraController.player = gameObject;
+        CameraController.instance.player = gameObject;
         yield return new WaitForSeconds(1f);
-        CameraController.player = player;
+        CameraController.instance.player = player;
         playForStop = true;
     }
 }

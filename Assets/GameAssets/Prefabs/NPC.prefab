@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualCue: {fileID: 8575005123082532706}
-  inkJson: {fileID: 4900000, guid: cde5488fe55b771449a312f12d3bc5fb, type: 3}
+  inkJson: {fileID: 4900000, guid: e51766c6b621a9246b09698e2b14cc5f, type: 3}
   animator: {fileID: 8575005123082532704}
 --- !u!1 &8575005123082532706
 GameObject:
@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 8575005123082532707}
   - component: {fileID: 8575005123082532705}
   - component: {fileID: 8575005123082532704}
+  - component: {fileID: 674702189}
   m_Layer: 0
   m_Name: Y button
   m_TagString: Untagged
@@ -179,6 +180,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &674702189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8575005123082532706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f0019ee753ddf4f9e46cb77b250ee5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sr: {fileID: 8575005123082532705}
+  playerInput: {fileID: 0}
+  XboxSprite: {fileID: 21300000, guid: 50b4fe4c71f45ee43b39a6c06ff2a596, type: 3}
+  KeyboardSprite: {fileID: 21300000, guid: 2b667a2d50981694b89537bb63c5b5ba, type: 3}
 --- !u!1 &8575005123777011201
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,13 @@ public class PlayerMovemnt : MonoBehaviour
     private float horizontal;
     public float speed = 5f;
     public float jumpForce = 16f;
-    private bool isFacingRight = true;
+    public bool isFacingRight = true;
+
+    private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter;
+
+    private float jumpBufferTime = 0.2f;
+    private float jumpBufferCounter;
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -20,15 +26,18 @@ public class PlayerMovemnt : MonoBehaviour
 
     public bool knockFromRight;
 
+    private AudioSource audioSource;
+    public AudioClip jumpSound;
+
     public Animator animator;
 
     public GamepadControls controls;
 
     void Awake()
     {
-        controls = new GamepadControls();
+        audioSource = gameObject.GetComponent<AudioSource>();
 
-        controls.Gameplay.Jump.performed += ctx => Jump();
+        controls = new GamepadControls();
     }
 
     void FixedUpdate()
@@ -43,7 +52,7 @@ public class PlayerMovemnt : MonoBehaviour
             rb.gravityScale = 4;
         }
 
-        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        if (DialogueManager.GetInstance().dialogueIsPlaying || InteractableFunctions.GetInstance().interactableIsShowing)
         {
             animator.SetFloat("Walk", 0);
             animator.SetBool("isJumping", false);
@@ -52,7 +61,7 @@ public class PlayerMovemnt : MonoBehaviour
         else
         {
             animator.SetFloat("Walk", 0);
-            speed = 5;
+            speed = 7f;
         }
 
         if (KBCounter <= 0)
@@ -78,6 +87,57 @@ public class PlayerMovemnt : MonoBehaviour
     {
         horizontal = Input.GetAxisRaw("Horizontal");
 
+        if (DialogueManager.GetInstance().dialogueIsPlaying || InteractableFunctions.GetInstance().interactableIsShowing)
+        {
+            return;
+        }
+
+        if (isGrounded())
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        if (InputManager.GetInstance().GetJumpPressed())
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
+        if (rb.velocity.y < 0)
+        {
+            animator.SetBool("isJumping", false);
+            animator.SetBool("IsFalling?", true);
+        }
+
+        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f)
+        {
+            audioSource.clip = jumpSound;
+            audioSource.Play();
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            animator.SetBool("isJumping", true);
+            animator.SetBool("IsFalling?", false);
+            jumpBufferCounter = 0f;
+        }
+
+        if (rb.velocity.y > 0 && InputManager.GetInstance().GetJumpPressed())
+        {
+            animator.SetBool("isJumping", false);
+            animator.SetBool("IsFalling?", true);
+        }
+
+        if (rb.velocity.y == 0 && isGrounded())
+        {
+            animator.SetBool("isJumping", false);
+            animator.SetBool("IsFalling?", false);
+        }
+
         Flip();
 
     }
@@ -92,28 +152,14 @@ public class PlayerMovemnt : MonoBehaviour
         controls.Gameplay.Disable();
     }
 
-    void Jump()
-    {
-        if (DialogueManager.GetInstance().dialogueIsPlaying)
-        {
-            return;
-        }
-
-        if (isGrounded())
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            animator.SetBool("isJumping", true);
-        }
-    }
-
-    private bool isGrounded()
+    public bool isGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
     void Flip()
     {
-        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        if (DialogueManager.GetInstance().dialogueIsPlaying || InteractableFunctions.GetInstance().interactableIsShowing)
         {
             return;
         }

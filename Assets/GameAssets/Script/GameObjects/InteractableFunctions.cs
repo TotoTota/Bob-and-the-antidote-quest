@@ -5,19 +5,29 @@ using UnityEngine;
 public class InteractableFunctions : MonoBehaviour
 {
     public Animator animator;
-    public PlayerMovemnt playermovement;
+
+    private static InteractableFunctions instance;
+    public bool interactableIsShowing { get; private set; }
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    public static InteractableFunctions GetInstance()
+    {
+        return instance;
+    }
 
     public void Interact()
     {
         animator.SetBool("isInteracting", true);
-        playermovement.speed = 0f;
-        playermovement.animator.enabled = false;
+        interactableIsShowing = true;
 
     }
     public void RemoveInteract()
     {
         animator.SetBool("isInteracting", false);
-        playermovement.speed = 5f;
-        playermovement.animator.enabled = true;
+        interactableIsShowing = false;
     }
 }

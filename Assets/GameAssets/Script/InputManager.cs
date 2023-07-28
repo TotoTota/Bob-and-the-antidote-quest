@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviour
     private bool removeInteractPressed = false;
     private bool interactPressed = false;
     private bool submitPressed = false;
+    private bool attackPressed = false;
 
     private static InputManager instance;
 
@@ -76,6 +77,18 @@ public class InputManager : MonoBehaviour
         }
     }
 
+    public void AttackPressed(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            attackPressed = true;
+        }
+        else if (context.canceled)
+        {
+            attackPressed = false;
+        }
+    }
+
     public void RemoveInterctPressed(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -124,5 +137,12 @@ public class InputManager : MonoBehaviour
     public void RegisterSubmitPressed()
     {
         submitPressed = false;
+    }
+
+    public bool GetAttackPressed()
+    {
+        bool result = attackPressed;
+        attackPressed = false;
+        return result;
     }
 }

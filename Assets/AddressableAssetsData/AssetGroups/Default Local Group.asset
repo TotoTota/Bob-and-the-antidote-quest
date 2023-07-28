@@ -16,7 +16,11 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 802768a93b1e23a46b294919f9e38804
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 39242df336f22444ea5ebded1f6e1c4f
+    m_Address: Assets/sprite/Interactable/X Button.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 38a2f1daa5f6b05408d53aea305a987d, type: 2}
   m_SchemaSet:

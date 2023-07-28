@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Health : MonoBehaviour
 {
@@ -14,7 +16,8 @@ public class Health : MonoBehaviour
     {
         if(health <= 0)
         {
-            Debug.Log("Player died");
+            WallBehaviour.hasPlayed = false;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         if(health > healthMax)
