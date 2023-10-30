@@ -1,20 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovemnt : MonoBehaviour
 {
     private float horizontal;
     public float speed = 5f;
     public float jumpForce = 16f;
+    public float startJumpDelay;
+    private float jumpDelay;
     public bool isFacingRight = true;
+    public float checkRadius;
+    public PhysicsMaterial2D highFirction;
+    public PhysicsMaterial2D lowFriction;
 
-    private float coyoteTime = 0.2f;
-    private float coyoteTimeCounter;
-
-    private float jumpBufferTime = 0.2f;
-    private float jumpBufferCounter;
+    public Collider2D collider1;
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -32,6 +30,46 @@ public class PlayerMovemnt : MonoBehaviour
     public Animator animator;
 
     public GamepadControls controls;
+
+    public float TimeBtwTrail;
+    public GameObject trailEffectGround;
+    public float StartTimeTrail;
+    public GameObject jumpEffectGround;
+
+    void Flip()
+    {
+        if (DialogueManager.GetInstance().dialogueIsPlaying || InteractableFunctions.GetInstance().interactableIsShowing)
+        {
+            return;
+        }
+
+        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
+        {
+            isFacingRight = !isFacingRight;
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1f;
+            transform.localScale = localScale;
+        }
+
+        animator.SetFloat("Walk", Mathf.Abs(horizontal));
+    }
+
+    public bool isGrounded()
+    {
+        RaycastHit2D hit = Physics2D.BoxCast(collider1.bounds.center, collider1.bounds.size, 0, Vector2.down, 0.2f, groundLayer);
+
+        return hit.collider != null;
+    }
+
+    private bool isFalling()
+    {
+        if (rb.velocity.y < 0 && !isGrounded())
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     void Awake()
     {
@@ -64,6 +102,15 @@ public class PlayerMovemnt : MonoBehaviour
             speed = 7f;
         }
 
+        if(horizontal != 0)
+        {
+            rb.sharedMaterial = lowFriction;
+        }
+        else
+        {
+            rb.sharedMaterial = highFirction;
+        }
+
         if (KBCounter <= 0)
         {
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
@@ -92,50 +139,44 @@ public class PlayerMovemnt : MonoBehaviour
             return;
         }
 
-        if (isGrounded())
+        if(horizontal != 0 && isGrounded())
         {
-            coyoteTimeCounter = coyoteTime;
-        }
-        else
-        {
-            coyoteTimeCounter -= Time.deltaTime;
-        }
-
-        if (InputManager.GetInstance().GetJumpPressed())
-        {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
+            if(TimeBtwTrail <= 0)
+            {
+                Instantiate(trailEffectGround, groundCheck.position, Quaternion.identity);
+                TimeBtwTrail = StartTimeTrail;
+            }
+            else
+            {
+                TimeBtwTrail -= Time.deltaTime;
+            }
         }
 
-        if (rb.velocity.y < 0)
+        if (isFalling())
         {
             animator.SetBool("isJumping", false);
             animator.SetBool("IsFalling?", true);
         }
 
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f)
+        if (!isFalling())
         {
+            animator.SetBool("isJumping", false);
+            animator.SetBool("IsFalling?", false);
+        }
+
+        if (isGrounded() && InputManager.GetInstance().GetJumpPressed() && jumpDelay <= 0)
+        {
+            jumpDelay = startJumpDelay;
+            animator.SetBool("isJumping", true);
+            animator.SetBool("IsFalling?", false);
             audioSource.clip = jumpSound;
             audioSource.Play();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            animator.SetBool("isJumping", true);
-            animator.SetBool("IsFalling?", false);
-            jumpBufferCounter = 0f;
+            Instantiate(jumpEffectGround, groundCheck.position, Quaternion.identity);
         }
-
-        if (rb.velocity.y > 0 && InputManager.GetInstance().GetJumpPressed())
+        else
         {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("IsFalling?", true);
-        }
-
-        if (rb.velocity.y == 0 && isGrounded())
-        {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("IsFalling?", false);
+            jumpDelay -= Time.deltaTime;
         }
 
         Flip();
@@ -150,28 +191,5 @@ public class PlayerMovemnt : MonoBehaviour
     void OnDisable()
     {
         controls.Gameplay.Disable();
-    }
-
-    public bool isGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-    }
-
-    void Flip()
-    {
-        if (DialogueManager.GetInstance().dialogueIsPlaying || InteractableFunctions.GetInstance().interactableIsShowing)
-        {
-            return;
-        }
-
-        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
-        {
-            isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
-        }
-
-        animator.SetFloat("Walk", Mathf.Abs(horizontal));
     }
 }
