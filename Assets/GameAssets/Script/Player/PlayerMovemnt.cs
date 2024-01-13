@@ -11,6 +11,7 @@ public class PlayerMovemnt : MonoBehaviour
     public float checkRadius;
     public PhysicsMaterial2D highFirction;
     public PhysicsMaterial2D lowFriction;
+    public PhysicsMaterial2D walkFriction;
 
     public Collider2D collider1;
 
